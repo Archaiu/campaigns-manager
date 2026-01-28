@@ -1,0 +1,40 @@
+.login-container {
+  @apply min-h-screen flex items-center justify-center bg-gray-50;
+}
+
+.login-box {
+  @apply bg-white rounded-lg shadow-xl p-8 w-full max-w-md;
+}
+
+.login-box h2 {
+  @apply text-3xl font-bold text-center mb-8 text-gray-800;
+}
+
+.form-group {
+  @apply mb-6;
+}
+
+.form-group label {
+  @apply block mb-2 text-sm font-semibold text-gray-700;
+}
+
+.form-group input {
+  @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200;
+}
+
+.form-group input:disabled {
+  @apply bg-gray-100 cursor-not-allowed opacity-60;
+}
+
+.error-message {
+  @apply bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-4 text-sm border border-red-200;
+}
+
+.login-box button {
+  @apply w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 transform hover:scale-105;
+}
+
+.login-box button:disabled {
+  @apply opacity-60 cursor-not-allowed transform-none;
+}
+
