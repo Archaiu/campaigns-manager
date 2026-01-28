@@ -1,4 +1,5 @@
 import { useState } from "react";
+import apiClient from "../utils/apiClient";
 
 function LoginForm({ setUser, message = "" }) {
   const [username, setUsername] = useState("");
@@ -12,25 +13,13 @@ function LoginForm({ setUser, message = "" }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        setUser(data.user);
-      } else {
-        setError(data.error || "Błąd logowania");
-      }
+      const data = await apiClient.post("/login", { username, password });
+      
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setUser(data.user);
     } catch (err) {
-      setError("Nie można połączyć z serwerem");
+      setError(err.message || "Nie można połączyć z serwerem");
     } finally {
       setIsLoading(false);
     }
