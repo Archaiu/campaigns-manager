@@ -1,5 +1,6 @@
 // Backend API URL - zmień na URL swojego backendu na Koyeb
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+console.log("Mój aktualny adres API to:", API_BASE_URL);
 
 class ApiClient {
   constructor() {
