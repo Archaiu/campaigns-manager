@@ -1,25 +1,35 @@
 import { useState } from "react";
 import apiClient from "../utils/apiClient";
 
-function LoginForm({ setUser, message = "", setView }) {
+function RegisterForm({ setView, setMessage }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(message);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (password !== confirmPassword) {
+      setError("Hasła nie są identyczne");
+      return;
+    }
+
+    if (password.length < 3) {
+      setError("Hasło musi mieć minimum 3 znaki");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const data = await apiClient.post("/login", { username, password });
-      
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      setUser(data.user);
+      await apiClient.post("/register", { username, password });
+      setMessage("Konto zostało utworzone! Możesz się teraz zalogować.");
+      setView("login");
     } catch (err) {
-      setError(err.message || "Nie można połączyć z serwerem");
+      setError(err.message || "Nie można utworzyć konta");
     } finally {
       setIsLoading(false);
     }
@@ -28,7 +38,7 @@ function LoginForm({ setUser, message = "", setView }) {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h2>Campaigns Manager</h2>
+        <h2>Rejestracja</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="username">Nazwa użytkownika</label>
@@ -56,17 +66,29 @@ function LoginForm({ setUser, message = "", setView }) {
             />
           </div>
 
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Potwierdź hasło</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Wprowadź hasło ponownie"
+              required
+              disabled={isLoading}
+            />
+          </div>
+
           {error && <div className="error-message">{error}</div>}
-          {message && <div style={{ color: "#28a745", marginBottom: "10px", fontSize: "14px" }}>{message}</div>}
 
           <button type="submit" disabled={isLoading}>
-            {isLoading ? "Logowanie..." : "Zaloguj się"}
+            {isLoading ? "Rejestracja..." : "Zarejestruj się"}
           </button>
 
           <div style={{ marginTop: "15px", textAlign: "center" }}>
             <button
               type="button"
-              onClick={() => setView("register")}
+              onClick={() => setView("login")}
               style={{ 
                 background: "none", 
                 border: "none", 
@@ -75,7 +97,7 @@ function LoginForm({ setUser, message = "", setView }) {
                 textDecoration: "underline"
               }}
             >
-              Nie masz konta? Zarejestruj się
+              Masz już konto? Zaloguj się
             </button>
           </div>
         </form>
@@ -84,4 +106,4 @@ function LoginForm({ setUser, message = "", setView }) {
   );
 }
 
-export default LoginForm;
+export default RegisterForm;

@@ -135,6 +135,40 @@ def login():
         }
     }), 200
 
+@app.route('/api/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    
+    logger.info(f"Registration attempt for username: {username}")
+
+    if not username or not password:
+        logger.warning("Registration failed: missing username or password")
+        return jsonify({"error": "Brak nazwy użytkownika lub hasła"}), 400
+
+    if len(password) < 3:
+        return jsonify({"error": "Hasło musi mieć minimum 3 znaki"}), 400
+
+    existing_user = users_collection.find_one({"username": username})
+    if existing_user:
+        logger.warning(f"Registration failed: user '{username}' already exists")
+        return jsonify({"error": "Użytkownik o tej nazwie już istnieje"}), 400
+
+    last_user = users_collection.find_one(sort=[("_id", -1)])
+    new_id = last_user["_id"] + 1 if last_user else 1
+
+    new_user = {
+        "_id": new_id,
+        "username": username,
+        "password": generate_password_hash(password)
+    }
+
+    users_collection.insert_one(new_user)
+    logger.info(f"User '{username}' registered successfully (ID: {new_id})")
+
+    return jsonify({"message": "Użytkownik został utworzony"}), 201
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

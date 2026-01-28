@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import MainPageForUser from "./MainPageForUser";
 import CampaignForm from "./CampaignForm";
 import LoginForm from "./LoginForm";
+import RegisterForm from "./RegisterForm";
 import apiClient from "../utils/apiClient";
 import "../styles/LoginForm.css";
 
@@ -14,6 +15,7 @@ function App() {
   const [editingCampaign, setEditingCampaign] = useState(null);
   const [user, setUser] = useState(null);
   const [loginMessage, setLoginMessage] = useState("");
+  const [authView, setAuthView] = useState("register");
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -26,6 +28,7 @@ function App() {
     apiClient.setTokenExpiredHandler((errorMessage) => {
       setUser(null);
       setLoginMessage(errorMessage || "Token wygasł, zaloguj się ponownie");
+      setAuthView("login");
     });
   }, []);
 
@@ -50,10 +53,15 @@ function App() {
     setUser(null);
     setView("mainPage");
     setLoginMessage("");
+    setAuthView("register");
   };
 
   if (!user) {
-    return <LoginForm setUser={setUser} message={loginMessage} />;
+    return authView === "login" ? (
+      <LoginForm setUser={setUser} message={loginMessage} setView={setAuthView} />
+    ) : (
+      <RegisterForm setView={setAuthView} setMessage={setLoginMessage} />
+    );
   }
 
   return (
